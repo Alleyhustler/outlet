@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADE Market - Premium Digital Asset Exchange</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --dark: #181C14;
+            --graphite: #3C3D37;
+            --sage: #697565;
+            --cream: #ECDFCC;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+  font-family: "VT323", monospace;
+            background-color: var(--dark);
+            color: var(--cream);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            margin-right: 320px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Grid background */
+        .main-content::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(rgba(24, 28, 20, 0.97), rgba(24, 28, 20, 0.97)),
+                linear-gradient(90deg, var(--sage) 1px, transparent 1px) 0 0,
+                linear-gradient(var(--sage) 1px, transparent 1px) 0 0;
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+        
+        header {
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--sage), transparent);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--cream);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        h1::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: var(--sage);
+            margin-right: 12px;
+            transform: rotate(45deg);
+        }
+        
+        header p {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            color: var(--sage);
+            font-weight: 300;
+            max-width: 400px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .balance {
+            background-color: var(--graphite);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .balance:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        
+        .balance::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sage), transparent);
+        }
+        
+        .balance h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--cream);
+        }
+        
+        .balance p {
+            font-size: 0.9rem;
+            color: var(--sage);
+            margin-bottom: 1.5rem;
+        }
+        
+        .balance-amount {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--cream);
+            display: flex;
+            align-items: center;
+            letter-spacing: -1px;
+        }
+        
+        .balance-amount::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background-color: var(--sage);
+            margin-right: 12px;
+            border-radius: 4px;
+        }
+        
+        .market-status {
+            background-color: var(--graphite);
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .market-status:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        
+        .market-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sage), transparent);
+        }
+        
+        .market-status h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .market-status h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #67D555;
+            margin-right: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #67D555;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .market-data {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .market-item {
+            background-color: rgba(105, 117, 101, 0.2);
+            padding: 0.8rem;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .market-item-label {
+            font-size: 0.75rem;
+            color: var(--sage);
+            margin-bottom: 0.3rem;
+        }
+        
+        .market-item-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--sage);
+            margin-right: 10px;
+            transform: rotate(45deg);
+        }
+        
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .asset-card {
+            background-color: var(--graphite);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .asset-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+        }
+        
+        .asset-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 3px;
+            background: var(--sage);
+            border-radius: 0 0 3px 3px;
+        }
+        
+        .asset-image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .asset-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            filter: grayscale(20%) contrast(110%);
+        }
+        
+        .asset-card:hover .asset-image {
+            transform: scale(1.1);
+        }
+        
+        .asset-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(24, 28, 20, 0.8) 100%);
+        }
+        
+        .asset-content {
+            padding: 1.2rem;
+            position: relative;
+        }
+        
+        .asset-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+        
+        .asset-id {
+            font-size: 0.75rem;
+            color: var(--sage);
+            background-color: rgba(105, 117, 101, 0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .asset-popularity {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--sage);
+        }
+        
+        .asset-popularity i {
+            margin-right: 4px;
+        }
+        
+        .asset-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            color: var(--cream);
+        }
+        
+        .asset-description {
+            font-size: 0.85rem;
+            color: var(--sage);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            height: 3.6em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .asset-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(105, 117, 101, 0.3);
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .asset-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--cream);
+            display: flex;
+            align-items: center;
+        }
+        
+        .asset-price::before {
+            content: '$';
+            font-size: 0.9rem;
+            color: var(--sage);
+            margin-right: 2px;
+            align-self: flex-start;
+        }
+        
+        .buy-button {
+            background-color: var(--sage);
+            color: var(--dark);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+  font-family: "VT323", monospace;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .buy-button i {
+            margin-left: 6px;
+            font-size: 0.8rem;
+        }
+        
+        .buy-button:hover {
+            background-color: var(--cream);
+            transform: translateY(-2px);
+        }
+        
+        .buy-button:disabled {
+            background-color: rgba(105, 117, 101, 0.3);
+            color: rgba(236, 223, 204, 0.5);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .transaction-history {
+            background-color: var(--graphite);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .transaction-history::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sage), transparent);
+        }
+        
+        #transactions {
+            max-height: 350px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            padding-right: 10px;
+        }
+        
+        #transactions::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        #transactions::-webkit-scrollbar-track {
+            background: rgba(105, 117, 101, 0.1);
+            border-radius: 10px;
+        }
+        
+        #transactions::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 10px;
+        }
+        
+        .transaction-item {
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: rgba(105, 117, 101, 0.1);
+            margin-bottom: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            transition: var(--transition);
+        }
+        
+        .transaction-item:hover {
+            background-color: rgba(105, 117, 101, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .transaction-type {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--sage);
+            color: var(--dark);
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+        
+        .transaction-asset {
+            font-weight: 500;
+            color: var(--cream);
+        }
+        
+        .transaction-amount {
+            font-weight: 600;
+            color: var(--cream);
+        }
+        
+        .transaction-date {
+            font-size: 0.75rem;
+            color: var(--sage);
+        }
+        
+        .chat-container {
+            width: 320px;
+            background-color: var(--graphite);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background-color: var(--sage);
+            color: var(--dark);
+            padding: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-header-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header-title::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--dark);
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+        
+        .chat-user-count {
+            font-size: 0.75rem;
+            background-color: rgba(24, 28, 20, 0.3);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(105, 117, 101, 0.1);
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 10px;
+        }
+        
+        .message {
+            position: relative;
+            padding: 0.8rem 1rem;
+            background-color: rgba(105, 117, 101, 0.2);
+            border-radius: 8px;
+            max-width: 85%;
+            word-wrap: break-word;
+            align-self: flex-start;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--sage), transparent);
+            border-radius: 1px;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: var(--cream);
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+        }
+        
+        .message-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: rgba(236, 223, 204, 0.9);
+        }
+        
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(105, 117, 101, 0.3);
+            background-color: var(--graphite);
+        }
+        
+        .wallet-input, .message-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(105, 117, 101, 0.3);
+            border-radius: 8px;
+            background-color: rgba(24, 28, 20, 0.5);
+            color: var(--cream);
+  font-family: "VT323", monospace;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .wallet-input::placeholder, .message-input::placeholder {
+            color: rgba(105, 117, 101, 0.7);
+        }
+        
+        .wallet-input:focus, .message-input:focus {
+            outline: none;
+            border-color: var(--sage);
+            box-shadow: 0 0 0 2px rgba(105, 117, 101, 0.2);
+        }
+        
+        .send-button {
+            background-color: var(--sage);
+            color: var(--dark);
+            border: none;
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+  font-family: "VT323", monospace;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .send-button i {
+            margin-left: 6px;
+        }
+        
+        .send-button:hover {
+            background-color: var(--cream);
+        }
+        
+        .send-button:disabled {
+            background-color: rgba(105, 117, 101, 0.3);
+            color: rgba(24, 28, 20, 0.5);
+            cursor: not-allowed;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--sage);
+            color: var(--dark);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .notification::before {
+            content: '\f00c';
+  font-family: "VT323", monospace;
+            font-weight: 900;
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                margin-right: 0;
+                padding: 1.5rem;
+            }
+            
+            .chat-container {
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .chat-container.open {
+                transform: translateX(0);
+            }
+            
+            .chat-toggle {
+                position: fixed;
+                right: 1rem;
+                bottom: 1rem;
+                width: 50px;
+                height: 50px;
+                background-color: var(--sage);
+                color: var(--dark);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                cursor: pointer;
+                z-index: 1001;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .assets-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <header>
+            <h1>OUTLET MARKET</h1>
+            <p>Exchange for Dumbest Memes on SOL Blockchain</p>
+            <!-- Place this inside your <header> element, after the <h1> and <p> -->
+<div style="display:flex;gap:1.3rem;align-items:center;margin-top:1.1rem;">
+  <a href="https://x.com/outletdotfun" target="_blank" rel="noopener"
+     style="color:var(--sage);font-size:1.4rem;display:flex;align-items:center;text-decoration:none;">
+    <i class="fab fa-twitter"></i>
+    <span style="margin-left:0.4em;font-size:1.04rem;font-family:'VT323',monospace;">Twitter</span>
+  </a>
+  <a href="https://t.me/memesoutlet" target="_blank" rel="noopener"
+     style="color:var(--sage);font-size:1.4rem;display:flex;align-items:center;text-decoration:none;">
+    <i class="fab fa-telegram"></i>
+    <span style="margin-left:0.4em;font-size:1.04rem;font-family:'VT323',monospace;">Telegram</span>
+  </a>
+  <a href="https://pump.fun/profile/8WNPBsPGKRWMT1WzybQrNrMbhsS5KHxTGmfdB84AwPG9?tab=balances" target="_blank" rel="noopener"
+     style="background:var(--sage);color:var(--dark);font-weight:700;border-radius:6px;padding:0.6rem 1.2rem;display:flex;align-items:center;gap:0.7rem;font-size:1.06rem;text-decoration:none;margin-left:0.6em;font-family:'VT323',monospace;">
+    Buy $OUTLET <i class="fas fa-arrow-right" style="font-size:0.95em;"></i>
+  </a>
+</div>
+<a href="https://x.com/outletdotfun" 
+   style="position: absolute; top: 0.5rem; right: 1rem; z-index: 2;">
+  <img src="image (13).png" alt="Outlet Market Logo" 
+       style="height: 138px; width: auto; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.13); background:var(--graphite); border:2px solid var(--sage); padding:4px;"/>
+</a>
+        </header>
+        
+        
+        <div class="dashboard">
+            <div class="balance">
+                <div>
+                    <h2>Portfolio Balance</h2>
+                    <p>Trade with $OUTLET tokens - the currency of the future</p>
+                </div>
+                <div class="balance-amount" id="balance">100,000</div>
+            </div>
+            
+            <div class="market-status">
+                <h2>Market Status</h2>
+                <div class="market-data">
+                    <div class="market-item">
+                        <div class="market-item-label">24h Volume</div>
+                        <div class="market-item-value">4.4k</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-item-label">Assets Listed</div>
+                        <div class="market-item-value">8</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-item-label">$TRADE Value</div>
+                        <div class="market-item-value">+2.4%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Featured Assets</h2>
+        <div class="assets-grid" id="assets-grid">
+            <!-- Assets will be populated by JavaScript -->
+        </div>
+        
+        <div class="transaction-history">
+            <h2 class="section-title">Transaction History</h2>
+            <div id="transactions">
+                <!-- Transactions will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="notification" id="notification"></div>
+    </div>
+    
+    <div class="chat-container" id="chat-container">
+        <div class="chat-header">
+            <div class="chat-header-title">Live Chat</div>
+            <div class="chat-user-count">12 online</div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-container">
+            <input type="text" class="wallet-input" id="wallet-input" placeholder="Enter your Solana wallet address">
+            <input type="text" class="message-input" id="message-input" placeholder="Type your message..." disabled>
+            <button class="send-button" id="send-button" disabled>Send <i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    
+    <div class="chat-toggle" id="chat-toggle" style="display: none;">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCT2qhkBfvAkRVIteotxl6IYnK1gNd9Vzg",
+            authDomain: "trade-75fbe.firebaseapp.com",
+            projectId: "trade-75fbe",
+            storageBucket: "trade-75fbe.appspot.com",
+            messagingSenderId: "56973265163",
+            appId: "1:56973265163:web:8746c75721fbde8b837a0e",
+            measurementId: "G-SRBD5R1F2"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const analytics = firebase.analytics();
+
+// Assets data with enhanced descriptions and merged items
+const assets = [
+  { 
+    id: 1, 
+    name: "Fartcoin's Fart Canister", 
+    price: 20000, 
+    image: "fart.png",
+    description: "A sealed digital canister of on-chain flatulence. For true degen collectors only.",
+    popularity: 50
+  },
+  { 
+    id: 2, 
+    name: "Elon's Hair", 
+    price: 25000, 
+    image: "hair.png",
+    description: "A digital certificate for a strand of hair from the tech mogul himself. Authenticity verified on blockchain.",
+    popularity: 89
+  },
+  { 
+    id: 3, 
+    name: "Dogwifhat's Hat", 
+    price: 25000, 
+    image: "hat.png",
+    description: "The iconic hat worn by Dogwifhat, now immortalized as a digital collectible.",
+    popularity: 70
+  },
+  { 
+    id: 4, 
+    name: "Pizza from 2010", 
+    price: 15000, 
+    image: "piz.png",
+    description: "Digital memorabilia of the famous pizza purchased for 10,000 BTC. A slice of crypto history.",
+    popularity: 88
+  },
+  { 
+    id: 5, 
+    name: "Peanut's Acorn", 
+    price: 18000, 
+    image: "pean.png",
+    description: "A tokenized acorn once hidden away by the legendary Peanut the squirrel.",
+    popularity: 61
+  },
+  { 
+    id: 6, 
+    name: "Gigachad's Protein Powder", 
+    price: 30000, 
+    image: "gig.png",
+    description: "A digital jar of protein powder used by Gigachad before legendary gains.",
+    popularity: 72
+  },
+  { 
+    id: 8, 
+    name: "horn", 
+    price: 35000, 
+    image: "horn.png",
+    description: "A mythical golden horn from the legendary Goatseus. (Not financial advice.)",
+    popularity: 64
+  },
+  { 
+    id: 9, 
+    name: "Bonk's Chew Toy", 
+    price: 15000, 
+    image: "bon.png",
+    description: "A digital chew toy belonging to Bonk, the internet's favorite meme dog.",
+    popularity: 58
+  },
+  { 
+    id: 13, 
+    name: "Vitalik's Tie", 
+    price: 18000, 
+    image: "t.png",
+    description: "Own a digital twin of the famous hoodie worn during the Ethereum whitepaper presentation.",
+    popularity: 76
+  },
+  { 
+    id: 15, 
+    name: "Elons Son", 
+    price: 22000, 
+    image: "x.png",
+    description: "A digital asset representing the enigmatic offspring of the world's richest meme lord.",
+    popularity: 59
+  }
+];
+
+        // User data
+        let userBalance = 100000;
+        let transactions = [];
+        let walletAddress = null;
+
+        // DOM elements
+        const balanceElement = document.getElementById('balance');
+        const assetsGrid = document.getElementById('assets-grid');
+        const transactionsElement = document.getElementById('transactions');
+        const chatMessages = document.getElementById('chat-messages');
+        const walletInput = document.getElementById('wallet-input');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const notification = document.getElementById('notification');
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatContainer = document.getElementById('chat-container');
+
+        // Initialize the app
+        function init() {
+            renderAssets();
+            updateBalance();
+            setupChat();
+            setupChatToggle();
+        }
+
+        // Setup chat toggle for mobile
+        function setupChatToggle() {
+            // Show toggle button on smaller screens
+            if (window.innerWidth <= 1200) {
+                chatToggle.style.display = 'flex';
+            }
+            
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 1200) {
+                    chatToggle.style.display = 'flex';
+                } else {
+                    chatToggle.style.display = 'none';
+                    chatContainer.classList.remove('open');
+                }
+            });
+            
+            chatToggle.addEventListener('click', function() {
+                chatContainer.classList.toggle('open');
+                
+                // Change icon based on state
+                const icon = chatToggle.querySelector('i');
+                if (chatContainer.classList.contains('open')) {
+                    icon.className = 'fas fa-times';
+                } else {
+                    icon.className = 'fas fa-comments';
+                }
+            });
+        }
+
+        // Render assets to the grid with animations
+        function renderAssets() {
+            assetsGrid.innerHTML = '';
+            
+            assets.forEach((asset, index) => {
+                const assetCard = document.createElement('div');
+                assetCard.className = 'asset-card animate__animated animate__fadeIn';
+                assetCard.style.animationDelay = `${index * 0.1}s`;
+                
+                const canBuy = userBalance >= asset.price;
+                
+                assetCard.innerHTML = `
+                    <div class="asset-image-container">
+                        <img src="${asset.image}" alt="${asset.name}" class="asset-image">
+                        <div class="asset-overlay"></div>
+                    </div>
+                    <div class="asset-content">
+                        <div class="asset-meta">
+                            <div class="asset-id">ID: ${asset.id}</div>
+                            <div class="asset-popularity">
+                                <i class="fas fa-fire"></i> ${asset.popularity}%
+                            </div>
+                        </div>
+                        <h3 class="asset-name">${asset.name}</h3>
+                        <p class="asset-description">${asset.description}</p>
+                        <div class="asset-price-row">
+                            <div class="asset-price">${asset.price.toLocaleString()}</div>
+                            <button class="buy-button" data-id="${asset.id}" ${!canBuy ? 'disabled' : ''}>
+                                ${canBuy ? 'Purchase' : 'Insufficient Funds'} ${canBuy ? '<i class="fas fa-arrow-right"></i>' : ''}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                assetsGrid.appendChild(assetCard);
+            });
+            
+            // Add event listeners to buy buttons
+            document.querySelectorAll('.buy-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const assetId = parseInt(this.getAttribute('data-id'));
+                    buyAsset(assetId);
+                });
+            });
+        }
+
+        // Buy an asset with enhanced animation
+        function buyAsset(assetId) {
+            const asset = assets.find(a => a.id === assetId);
+            if (!asset) return;
+            
+            if (userBalance >= asset.price) {
+                // Add purchase animation
+                const assetCard = document.querySelector(`.asset-card:nth-child(${assetId})`);
+                assetCard.classList.add('animate__animated', 'animate__pulse');
+                
+                setTimeout(() => {
+                    userBalance -= asset.price;
+                    transactions.push({
+                        type: 'buy',
+                        asset: asset.name,
+                        amount: asset.price,
+                        date: new Date().toLocaleString()
+                    });
+                    
+                    updateBalance();
+                    renderAssets();
+                    updateTransactions();
+                    showNotification(`Successfully acquired ${asset.name} for ${asset.price.toLocaleString()} $TRADE!`);
+                    
+                    // Log purchase to analytics
+                    analytics.logEvent('purchase', {
+                        currency: 'TRADE',
+                        value: asset.price,
+                        item_id: asset.id,
+                        item_name: asset.name
+                    });
+                    
+                    assetCard.classList.remove('animate__animated', 'animate__pulse');
+                }, 600);
+            }
+        }
+
+        // Update balance display with animation
+        function updateBalance() {
+            // Animate balance change
+            balanceElement.classList.add('animate__animated', 'animate__flash');
+            setTimeout(() => {
+                balanceElement.classList.remove('animate__animated', 'animate__flash');
+            }, 1000);
+            
+            balanceElement.textContent = `${userBalance.toLocaleString()}`;
+        }
+
+        // Update transactions display with enhanced UI
+        function updateTransactions() {
+            transactionsElement.innerHTML = '';
+            if (transactions.length === 0) {
+                transactionsElement.innerHTML = '<p style="color: var(--sage); text-align: center; padding: 1rem;">No transactions recorded yet.</p>';
+                return;
+            }
+            
+            transactions.slice().reverse().forEach((transaction, index) => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item animate__animated animate__fadeInRight';
+                transactionItem.style.animationDelay = `${index * 0.1}s`;
+                
+                transactionItem.innerHTML = `
+                    <div>
+                        <span class="transaction-type">${transaction.type.toUpperCase()}</span>
+                        <span class="transaction-asset">${transaction.asset}</span>
+                    </div>
+                    <div class="transaction-amount">-${transaction.amount.toLocaleString()} $TRADE</div>
+                    <div class="transaction-date"><i class="far fa-clock"></i> ${transaction.date}</div>
+                `;
+                
+                transactionsElement.appendChild(transactionItem);
+            });
+        }
+
+        // Show notification with animation
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Setup chat functionality with enhanced UI
+        function setupChat() {
+            // Listen for wallet input changes
+            walletInput.addEventListener('input', function() {
+                const address = this.value.trim();
+                if (address.length > 0) {
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+                    walletAddress = address;
+                } else {
+                    messageInput.disabled = true;
+                    sendButton.disabled = true;
+                    walletAddress = null;
+                }
+            });
+            
+            // Send message
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Listen for new messages
+            const messagesRef = database.ref('messages');
+            messagesRef.limitToLast(50).on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                displayMessage(message.sender, message.text, message.timestamp);
+            });
+            
+        }
+
+        // Send message to chat with animation
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (!walletAddress || !messageText) return;
+            
+            const timestamp = Date.now();
+            const sender = walletAddress.substring(0, 6) + '...' + walletAddress.substring(walletAddress.length - 4);
+            
+            database.ref('messages').push({
+                sender: sender,
+                text: messageText,
+                timestamp: timestamp,
+                fullAddress: walletAddress
+            });
+            
+            messageInput.value = '';
+            
+            // Log message to analytics
+            analytics.logEvent('send_message', {
+                sender: walletAddress
+            });
+        }
+
+        // Display message in chat with animation
+        function displayMessage(sender, text, timestamp) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message animate__animated animate__fadeIn';
+            
+            messageElement.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div class="message-text">${text}</div>
+            `;
+            
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
